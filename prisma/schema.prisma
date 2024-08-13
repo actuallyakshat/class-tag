@@ -7,10 +7,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  TEACHER
+  STUDENT
+}
+
 model User {
-  id        String @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String @unique
+  id        String   @id @unique @default(cuid())
+  name      String
+  email     String   @unique
   password  String
+  role      Role     @default(STUDENT)
+  teacher   Teacher?
+  student   Student?
+  teacherId String?
+  studentId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Teacher {
+  id         String      @id @unique @default(cuid())
+  userId     String      @unique
+  user       User        @relation(fields: [userId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  classrooms Classroom[]
+}
+
+model Student {
+  id                 String               @id @unique @default(cuid())
+  userId             String               @unique
+  user               User                 @relation(fields: [userId], references: [id])
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  classrooms         Classroom[]
+  AttendanceResponse AttendanceResponse[]
+}
+
+model Classroom {
+  id                String             @id @unique @default(cuid())
+  inviteLink        String             @unique
+  teacherId         String
+  students          Student[]          @relation
+  teacher           Teacher?           @relation(fields: [teacherId], references: [userId])
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  attendanceRecords AttendanceRecord[]
+}
+
+model AttendanceRecord {
+  id                  String               @id @unique @default(cuid())
+  classroom           Classroom            @relation(fields: [classroomId], references: [id])
+  classroomId         String
+  attendanceResponses AttendanceResponse[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model AttendanceResponse {
+  id           String           @id @default(cuid())
+  studentId    String
+  student      Student          @relation(fields: [studentId], references: [id])
+  attendanceId String
+  attendance   AttendanceRecord @relation(fields: [attendanceId], references: [id])
+  isPresent    Boolean
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model ClassroomStudent {
+  id          String    @id @default(cuid())
+  classroomId String
+  studentId   String
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime?
 }

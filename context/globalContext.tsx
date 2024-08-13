@@ -1,4 +1,6 @@
 "use client";
+import { getUserDetails } from "@/app/(auth)/_actions/actions";
+import LoadingScreen from "@/app/_components/LoadingScreen";
 import getSession from "@/lib/getSession";
 import { User } from "@prisma/client";
 import React, { useContext, useEffect, createContext } from "react";
@@ -27,12 +29,48 @@ const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAuthenticated(false);
       setUser(null);
     }
-    setIsLoading(false);
   }
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      return;
+    }
+
+    async function getUserDetailsHandler() {
+      try {
+        const session = await getSession();
+
+        if (!session?.user) return;
+        const { id } = session.user;
+
+        if (!id) return;
+
+        const response = await getUserDetails(id);
+        if (response.success) {
+          console.log(response.data);
+          setUser(response.data);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error(error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    getUserDetailsHandler();
+  }, [isAuthenticated]);
 
   useEffect(() => {
     getSessionHandler();
   }, [isAuthenticated]);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <GlobalContext.Provider

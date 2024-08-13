@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { redirect } from "next/navigation";
 import { useGlobalContext } from "@/context/globalContext";
 
-export default function LoginForm() {
+export default function LoginForm({ role }: { role: string }) {
   const { setIsAuthenticated } = useGlobalContext();
   return (
     <form
@@ -15,7 +15,7 @@ export default function LoginForm() {
       action={async (formData) => {
         try {
           toast.loading("Logging in...", { id: "login" });
-          const response = await loginUser(formData);
+          const response = await loginUser(formData, role);
           if (response?.success) {
             setIsAuthenticated(true);
             toast.success("Successfully logged in!", { id: "login" });
@@ -45,7 +45,7 @@ export default function LoginForm() {
         name="password"
       />
 
-      <FormSubmissionButton label="Login" />
+      <FormSubmissionButton label={`Login as ${role}`} />
     </form>
   );
 }

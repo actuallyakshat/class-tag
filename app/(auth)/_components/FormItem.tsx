@@ -6,6 +6,7 @@ interface FormItemProps {
   placeholder: string;
   type: string;
   name: string;
+  defaultValue?: string;
 }
 
 export default function FormItem(props: FormItemProps) {
@@ -13,6 +14,7 @@ export default function FormItem(props: FormItemProps) {
     <div className="flex flex-col gap-2">
       <Label>{props.label}</Label>
       <Input
+        defaultValue={props.defaultValue}
         type={props.type}
         placeholder={props.placeholder}
         name={props.name}

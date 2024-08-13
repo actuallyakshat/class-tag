@@ -6,7 +6,7 @@ import FormItem from "./FormItem";
 import FormSubmissionButton from "./FormSubmissionButton";
 import { toast } from "sonner";
 
-export default function RegistrationForm() {
+export default function RegistrationForm({ role }: { role: string }) {
   function resetForm() {
     const form: HTMLFormElement = document.getElementById(
       "register-form",
@@ -22,7 +22,7 @@ export default function RegistrationForm() {
         try {
           validateForm(e);
           toast.loading("Creating Account", { id: "register-form" });
-          const response = await registerUser(e);
+          const response = await registerUser(e, role);
           if (response.success) {
             toast.success("Account Created", { id: "register-form" });
             resetForm();
@@ -69,7 +69,7 @@ export default function RegistrationForm() {
         type="password"
         name="confirmPassword"
       />
-      <FormSubmissionButton label="Register" />
+      <FormSubmissionButton label={`Register as ${role}`} />
     </form>
   );
 }
