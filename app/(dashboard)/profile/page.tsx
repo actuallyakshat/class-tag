@@ -1,7 +1,9 @@
 import React from "react";
 import UpdateProfileForm from "./_components/UpdateProfileForm";
+import { auth } from "@/auth";
 
-export default function Profile() {
+export default async function Profile() {
+  const session = await auth();
   return (
     <div>
       <h1 className="text-3xl font-black">Profile</h1>
@@ -10,7 +12,8 @@ export default function Profile() {
       </p>
       <hr className="my-3" />
 
-      <UpdateProfileForm />
+      <p>Your role: {session?.user?.role}</p>
+      {/* <UpdateProfileForm /> */}
     </div>
   );
 }

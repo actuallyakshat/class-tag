@@ -1,8 +1,9 @@
 "use client";
-import { getUserDetails } from "@/app/(auth)/_actions/actions";
+import { getUserDetails, logoutUser } from "@/app/(auth)/_actions/actions";
 import LoadingScreen from "@/app/_components/LoadingScreen";
 import getSession from "@/lib/getSession";
 import { User } from "@prisma/client";
+import { Session } from "next-auth";
 import React, { useContext, useEffect, createContext } from "react";
 
 interface GlobalContextProps {
@@ -11,6 +12,7 @@ interface GlobalContextProps {
   user: User | null;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setSession: React.Dispatch<React.SetStateAction<Session | null>>;
 }
 
 const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
@@ -18,55 +20,49 @@ const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
 const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-  const [user, setUser] = React.useState<any>(null);
-
-  async function getSessionHandler() {
-    const session = await getSession();
-    if (session) {
-      setUser(session.user);
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-      setUser(null);
-    }
-  }
+  const [session, setSession] = React.useState<Session | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      setIsLoading(false);
-      return;
-    }
+    getSession().then((session) => {
+      setSession(session);
+    });
+  }, []);
 
+  useEffect(() => {
     async function getUserDetailsHandler() {
       try {
-        const session = await getSession();
+        setIsLoading(true);
+        if (!session?.user) throw new Error("No user session found");
 
-        if (!session?.user) return;
         const { id } = session.user;
+        if (!id) throw new Error("No user ID found");
 
-        if (!id) return;
-
+        console.log("Getting user details for ID:", id);
         const response = await getUserDetails(id);
-        if (response.success) {
-          console.log(response.data);
-          setUser(response.data);
-        } else {
-          setUser(null);
+        if (!response.success || !response.data) {
+          throw new Error("Error fetching user details or no user found");
         }
+
+        setUser(response.data);
+        setIsAuthenticated(true);
       } catch (error) {
         console.error(error);
         setUser(null);
+        setIsAuthenticated(false);
+        await logoutUser();
       } finally {
         setIsLoading(false);
       }
     }
 
-    getUserDetailsHandler();
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    getSessionHandler();
-  }, [isAuthenticated]);
+    if (session) {
+      getUserDetailsHandler();
+    } else {
+      setIsLoading(false);
+      setIsAuthenticated(false);
+    }
+  }, [session]);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -74,7 +70,14 @@ const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <GlobalContext.Provider
-      value={{ isLoading, isAuthenticated, user, setIsAuthenticated, setUser }}
+      value={{
+        isLoading,
+        isAuthenticated,
+        user,
+        setIsAuthenticated,
+        setUser,
+        setSession,
+      }}
     >
       {children}
     </GlobalContext.Provider>

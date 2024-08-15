@@ -42,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!isValidPassword) throw new CredentialsSignin("Invalid password");
 
-        return user;
+        return { ...user, role: user.role as Role };
       },
     }),
   ],
@@ -55,13 +55,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (token?.sub) {
         session.user.id = token.sub;
+        session.user.role = token.role;
       }
       return session;
     },
 
     async jwt({ token, user }) {
       if (user?.id) {
-        token.sub = user.id;
+        token.role = user.role;
       }
       return token;
     },

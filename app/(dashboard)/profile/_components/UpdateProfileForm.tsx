@@ -13,14 +13,14 @@ export default function UpdateProfileForm() {
         name="firstName"
         type="text"
         placeholder="Tyler"
-        defaultValue={user?.firstName}
+        defaultValue={user?.name.split(" ")[0]}
       />
       <FormItem
         label="Last Name"
         name="lastName"
         type="text"
         placeholder="Durden"
-        defaultValue={user?.lastName}
+        defaultValue={user?.name.split(" ")[1]}
       />
       <FormItem
         label="Email"

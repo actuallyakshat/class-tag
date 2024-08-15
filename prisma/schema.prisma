@@ -29,7 +29,7 @@ model User {
 model Teacher {
   id         String      @id @unique @default(cuid())
   userId     String      @unique
-  user       User        @relation(fields: [userId], references: [id])
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   classrooms Classroom[]
@@ -38,7 +38,7 @@ model Teacher {
 model Student {
   id                 String               @id @unique @default(cuid())
   userId             String               @unique
-  user               User                 @relation(fields: [userId], references: [id])
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   classrooms         Classroom[]
@@ -47,18 +47,20 @@ model Student {
 
 model Classroom {
   id                String             @id @unique @default(cuid())
+  name              String
   inviteLink        String             @unique
+  headerUrl         String
   teacherId         String
+  teacher           Teacher?           @relation(fields: [teacherId], references: [userId], onDelete: Cascade)
   students          Student[]          @relation
-  teacher           Teacher?           @relation(fields: [teacherId], references: [userId])
+  attendanceRecords AttendanceRecord[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  attendanceRecords AttendanceRecord[]
 }
 
 model AttendanceRecord {
   id                  String               @id @unique @default(cuid())
-  classroom           Classroom            @relation(fields: [classroomId], references: [id])
+  classroom           Classroom            @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   classroomId         String
   attendanceResponses AttendanceResponse[]
   createdAt           DateTime             @default(now())
@@ -68,9 +70,9 @@ model AttendanceRecord {
 model AttendanceResponse {
   id           String           @id @default(cuid())
   studentId    String
-  student      Student          @relation(fields: [studentId], references: [id])
+  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   attendanceId String
-  attendance   AttendanceRecord @relation(fields: [attendanceId], references: [id])
+  attendance   AttendanceRecord @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
   isPresent    Boolean
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt

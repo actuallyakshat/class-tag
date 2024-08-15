@@ -1,13 +1,5 @@
+import { CircleGauge, School, User } from "lucide-react";
 import Link from "next/link";
-import React from "react";
-import {
-  CircleGauge,
-  Icon,
-  LoaderCircle,
-  NotepadText,
-  User,
-} from "lucide-react";
-import UserCard from "./UserCard";
 
 const sidebarItems = [
   {
@@ -15,7 +7,11 @@ const sidebarItems = [
     href: "/dashboard",
     icon: <CircleGauge className="size-5" />,
   },
-  { name: "Forms", href: "/forms", icon: <NotepadText className="size-5" /> },
+  {
+    name: "Classrooms",
+    href: "/classrooms",
+    icon: <School className="size-5" />,
+  },
 ];
 
 const sidebarBottomItems = [
@@ -26,7 +22,6 @@ export default function Sidebar() {
   return (
     <aside className="flex min-w-[18rem] max-w-[23rem] flex-1 flex-col justify-between gap-4 border-r">
       <div className="mt-8 flex w-full flex-col">
-        {/* <UserCard /> */}
         {sidebarItems.map((item) => (
           <Link
             key={item.name}

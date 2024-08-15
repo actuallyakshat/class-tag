@@ -39,7 +39,9 @@ CREATE TABLE "Student" (
 -- CreateTable
 CREATE TABLE "Classroom" (
     "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "inviteLink" TEXT NOT NULL,
+    "headerUrl" TEXT NOT NULL,
     "teacherId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

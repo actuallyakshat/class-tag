@@ -23,7 +23,7 @@ const publicNavLinks = [
 ];
 
 export default function Navbar() {
-  const { isAuthenticated } = useGlobalContext();
+  const { isAuthenticated, isLoading } = useGlobalContext();
 
   return (
     <nav className="flex h-16 w-full items-center justify-center px-6 shadow-sm">
@@ -38,7 +38,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {!isAuthenticated && (
+        {!isAuthenticated && !isLoading && (
           <div className="flex items-center gap-5">
             {publicNavLinks.map((link) => (
               <Link
@@ -52,7 +52,7 @@ export default function Navbar() {
           </div>
         )}
 
-        {isAuthenticated && (
+        {isAuthenticated && !isLoading && (
           <div className="flex items-center gap-5">
             {protectedNavLinks.map((link) => (
               <Link

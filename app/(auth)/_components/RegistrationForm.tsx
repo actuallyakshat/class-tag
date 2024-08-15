@@ -5,8 +5,10 @@ import { registerUser } from "../_actions/actions";
 import FormItem from "./FormItem";
 import FormSubmissionButton from "./FormSubmissionButton";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function RegistrationForm({ role }: { role: string }) {
+  const router = useRouter();
   function resetForm() {
     const form: HTMLFormElement = document.getElementById(
       "register-form",
@@ -26,6 +28,7 @@ export default function RegistrationForm({ role }: { role: string }) {
           if (response.success) {
             toast.success("Account Created", { id: "register-form" });
             resetForm();
+            router.push("/login");
           } else {
             toast.error(response.error, { id: "register-form" });
           }

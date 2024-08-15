@@ -4,11 +4,13 @@ import FormItem from "./FormItem";
 import FormSubmissionButton from "./FormSubmissionButton";
 import { loginUser } from "../_actions/actions";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useGlobalContext } from "@/context/globalContext";
+import getSession from "@/lib/getSession";
 
 export default function LoginForm({ role }: { role: string }) {
-  const { setIsAuthenticated } = useGlobalContext();
+  const { setIsAuthenticated, setSession } = useGlobalContext();
+  const router = useRouter();
   return (
     <form
       className="flex flex-col gap-4 pt-5"
@@ -18,6 +20,9 @@ export default function LoginForm({ role }: { role: string }) {
           const response = await loginUser(formData, role);
           if (response?.success) {
             setIsAuthenticated(true);
+            const session = await getSession();
+            setSession(session);
+            router.push("/dashboard");
             toast.success("Successfully logged in!", { id: "login" });
           } else {
             toast.error(response.error, { id: "login" });
@@ -28,7 +33,6 @@ export default function LoginForm({ role }: { role: string }) {
           toast.error(error.message, { id: "login" });
           return;
         }
-        redirect("/dashboard");
       }}
     >
       <FormItem

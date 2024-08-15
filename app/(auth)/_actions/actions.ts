@@ -9,9 +9,7 @@ export async function registerUser(formData: FormData, role: string) {
   try {
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
-
-    const name = firstName + " " + lastName;
-
+    const name = `${firstName} ${lastName}`;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
@@ -36,13 +34,47 @@ export async function registerUser(formData: FormData, role: string) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        role: role === "Teacher" ? Role.TEACHER : Role.STUDENT,
-      },
+    const newUser = await prisma.$transaction(async (prisma) => {
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          role: role === "Teacher" ? "TEACHER" : "STUDENT",
+        },
+      });
+
+      if (role === "Teacher") {
+        const teacher = await prisma.teacher.create({
+          data: {
+            userId: user.id,
+          },
+        });
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { teacherId: teacher.id },
+        });
+
+        return { ...user, teacherId: teacher.id };
+      }
+
+      if (role === "Student") {
+        const student = await prisma.student.create({
+          data: {
+            userId: user.id,
+          },
+        });
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { studentId: student.id },
+        });
+
+        return { ...user, studentId: student.id };
+      }
+
+      return user;
     });
 
     return { success: true, error: null, data: newUser };
