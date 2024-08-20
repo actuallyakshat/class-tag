@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import ClassroomsForStudents from "./_components/ClassroomsForStudents";
 import ClassroomsForTeachers from "./_components/ClassroomsForTeachers";
+import RedirectToLogin from "@/components/utility/RedirectToLogin";
 
 export default async function Classrooms() {
   const session = await auth();
@@ -9,7 +10,7 @@ export default async function Classrooms() {
   console.log("USER ROLE", userRole);
 
   if (!userRole) {
-    redirect("/login");
+    return <RedirectToLogin />;
   }
 
   if (userRole === "TEACHER") {

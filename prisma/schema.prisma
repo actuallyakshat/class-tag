@@ -27,12 +27,13 @@ model User {
 }
 
 model Teacher {
-  id         String      @id @unique @default(cuid())
-  userId     String      @unique
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  classrooms Classroom[]
+  id               String             @id @unique @default(cuid())
+  userId           String             @unique
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  classrooms       Classroom[]
+  AttendanceRecord AttendanceRecord[]
 }
 
 model Student {
@@ -60,9 +61,14 @@ model Classroom {
 
 model AttendanceRecord {
   id                  String               @id @unique @default(cuid())
+  teacherId           String
+  teacher             Teacher              @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   classroom           Classroom            @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   classroomId         String
+  date                DateTime
   attendanceResponses AttendanceResponse[]
+  acceptingResponses  Boolean              @default(false)
+  temporaryFormLink   String               @default("")
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -73,7 +79,6 @@ model AttendanceResponse {
   student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   attendanceId String
   attendance   AttendanceRecord @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
-  isPresent    Boolean
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 }

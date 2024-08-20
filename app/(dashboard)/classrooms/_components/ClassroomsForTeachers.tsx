@@ -1,15 +1,15 @@
 import prisma from "@/db";
 import getSession from "@/lib/getSession";
-import Link from "next/link";
-import { redirect } from "next/navigation";
 import AddClassroomButton from "./AddClassroomButton";
+import ClassroomCard from "./ClassroomCard";
+import RedirectToLogin from "@/components/utility/RedirectToLogin";
 
 export default async function ClassroomsForTeachers() {
   const session = await getSession();
   const user = session?.user;
 
   if (!session) {
-    redirect("/login");
+    return <RedirectToLogin />;
   }
 
   const classrooms = await prisma.classroom.findMany({
@@ -25,7 +25,6 @@ export default async function ClassroomsForTeachers() {
         {classrooms.map((classroom) => (
           <ClassroomCard
             key={classroom.id}
-            {...classroom}
             headerUrl={classroom.headerUrl}
             title={classroom.name}
             href={`/classroom/${classroom.id}`}
@@ -33,32 +32,5 @@ export default async function ClassroomsForTeachers() {
         ))}
       </div>
     </div>
-  );
-}
-
-interface ClassroomCardProps {
-  title: string;
-  href: string;
-  headerUrl: string;
-}
-
-function ClassroomCard(props: ClassroomCardProps) {
-  return (
-    <Link
-      href={props.href}
-      className="col-span-1 flex cursor-pointer flex-col rounded-lg border shadow-sm"
-    >
-      <div
-        className="h-[100px] w-full rounded-t-lg"
-        style={{
-          backgroundImage: `url(${props.headerUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
-      <div className="flex flex-col p-4">
-        <h2 className="font-black">{props.title}</h2>
-      </div>
-    </Link>
   );
 }

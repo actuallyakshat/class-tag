@@ -46,7 +46,9 @@ export default function DeleteClassroomButton(
   return (
     <Dialog>
       <DialogTrigger>
-        <Trash2 />
+        <div className="flex items-center justify-center rounded-md border p-3">
+          <Trash2 className="size-5" />
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

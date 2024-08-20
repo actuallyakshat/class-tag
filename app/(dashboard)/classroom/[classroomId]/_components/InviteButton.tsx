@@ -19,7 +19,9 @@ export default function InviteButton({ inviteLink }: { inviteLink: string }) {
   return (
     <Dialog>
       <DialogTrigger>
-        <UserRoundPlus />
+        <div className="flex items-center justify-center rounded-md border p-3">
+          <UserRoundPlus className="size-5" />
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

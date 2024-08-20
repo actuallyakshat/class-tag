@@ -1,7 +1,5 @@
 import React from "react";
 import Sidebar from "./_components/Sidebar";
-import getSession from "@/lib/getSession";
-import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
