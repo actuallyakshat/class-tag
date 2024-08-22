@@ -74,3 +74,47 @@ export async function refreshFormLink(attendanceId: string) {
     return { success: false, error: error.message, data: null };
   }
 }
+
+export async function getPresentStudents(attendanceId: string) {
+  try {
+    if (!attendanceId)
+      return { success: false, error: "ID is missing", data: null };
+
+    const attendanceRecord = await prisma.attendanceRecord.findUnique({
+      where: {
+        id: attendanceId,
+      },
+    });
+
+    if (!attendanceRecord) {
+      return {
+        success: false,
+        error: "Attendance record not found",
+        data: null,
+      };
+    }
+
+    const presentStudents = await prisma.attendanceResponse.findMany({
+      where: {
+        attendanceId: attendanceId,
+      },
+      include: {
+        student: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return { success: true, error: null, data: presentStudents };
+  } catch (error: any) {
+    console.error(error);
+    return { success: false, error: error.message, data: null };
+  }
+}

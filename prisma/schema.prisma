@@ -68,7 +68,7 @@ model AttendanceRecord {
   date                DateTime
   attendanceResponses AttendanceResponse[]
   acceptingResponses  Boolean              @default(false)
-  temporaryFormLink   String               @default("")
+  temporaryFormLink   String               @unique @default("")
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }

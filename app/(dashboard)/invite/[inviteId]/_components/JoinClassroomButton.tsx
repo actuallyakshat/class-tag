@@ -18,7 +18,7 @@ export default function JoinClassroomButton({
     setLoading(true);
     const response = await joinClassroom(classroomId, user?.studentId!);
     if (response.success) {
-      router.push("/classroom/" + classroomId);
+      router.push("/classrooms");
       toast.success("Joined classroom successfully");
     } else {
       setLoading(false);

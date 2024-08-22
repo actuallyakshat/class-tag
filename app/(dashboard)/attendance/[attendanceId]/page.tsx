@@ -4,6 +4,7 @@ import getSession from "@/lib/getSession";
 import { formatDate } from "@/lib/utils";
 import AttendanceOptions from "./_components/AttendanceOptions";
 import AttendanceSettings from "./_components/AttendanceSettings";
+import PresentStudentsList from "./_components/PresentStudentsList";
 
 export default async function AttendancePage({
   params,
@@ -65,14 +66,7 @@ export default async function AttendancePage({
         />
       </div>
       <AttendanceSettings attendanceId={attendanceRecordDetails.id} />
-      <div className="mt-8 flex w-full items-center justify-center gap-16 font-light">
-        <h3 className="text-2xl">
-          Present: <span className="ml-1 font-light text-lime-500">46</span>
-        </h3>
-        <h3 className="text-2xl">
-          Absent: <span className="ml-1 font-light text-rose-500">4</span>
-        </h3>
-      </div>
+      <PresentStudentsList attendanceId={attendanceRecordDetails.id} />
     </div>
   );
 }
